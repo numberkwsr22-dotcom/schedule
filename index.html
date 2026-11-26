@@ -1,0 +1,406 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>予定がある日付と時間帯</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Special+Elite&family=Zen+Antique&display=swap">
+<style>
+/* Layout: one riveted brass control panel. A dark title window with gears turning in its corners, then four brass gauge plates in a 2-column grid, one row per weekend. */
+:root {
+  --bg: #16100b;
+  --bg-glow: #35250f;
+  --soot: #211810;
+  --parchment: #e6d6af;
+  --brass-hi: #efd9a0;
+  --brass: #c9a35b;
+  --brass-end: #a88140;
+  --brass-edge: #7d5f2b;
+  --copper: #b5532c;
+  --ember: #f2913f;
+  --ink: #22160a;
+  --rivet: #4a3412;
+  --shadow: rgba(0, 0, 0, 0.55);
+  --font-display: "Zen Antique", "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-num: "Special Elite", "Courier New", monospace;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: radial-gradient(ellipse 80% 50% at 50% 0%, var(--bg-glow), transparent 70%);
+  background-repeat: no-repeat;
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.wrap {
+  max-width: 58rem;
+  margin: 0 auto;
+  padding-block: clamp(1.2rem, 5vw, 3rem) clamp(2rem, 6vw, 4rem);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Rivets in the four corners of a panel */
+.hero::after,
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--o) var(--o), var(--dot) 0 3.5px, transparent 4px),
+    radial-gradient(circle at calc(100% - var(--o)) var(--o), var(--dot) 0 3.5px, transparent 4px),
+    radial-gradient(circle at var(--o) calc(100% - var(--o)), var(--dot) 0 3.5px, transparent 4px),
+    radial-gradient(circle at calc(100% - var(--o)) calc(100% - var(--o)), var(--dot) 0 3.5px, transparent 4px);
+}
+
+/* Title window */
+.hero {
+  --o: 20px;
+  --dot: var(--brass-edge);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: clamp(2rem, 6vw, 3.4rem) clamp(1.5rem, 5vw, 3rem);
+  border: 2px solid var(--brass-edge);
+  border-radius: 0.6rem;
+  background: linear-gradient(160deg, #2c2014, var(--soot) 60%, #150e08);
+  box-shadow:
+    inset 0 0 0 6px var(--soot),
+    inset 0 0 0 7px var(--brass-edge),
+    0 18px 40px var(--shadow);
+}
+
+.hero h1,
+.hero p {
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 6.4vw, 3.3rem);
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  color: var(--brass-hi);
+  text-shadow: 0 2px 0 #000, 0 0 24px rgba(242, 145, 63, 0.25);
+  text-wrap: balance;
+}
+
+.hero p {
+  margin: 1.1rem 0 0;
+  padding-top: 1rem;
+  max-width: 34em;
+  border-top: 1px dashed var(--brass-edge);
+  font-size: clamp(0.95rem, 2.6vw, 1.1rem);
+  color: var(--parchment);
+}
+
+.gear {
+  position: absolute;
+  z-index: 0;
+  color: var(--brass-edge);
+  opacity: 0.5;
+  fill: currentColor;
+  animation: spin 40s linear infinite;
+}
+
+.gear.a {
+  width: clamp(6rem, 20vw, 10rem);
+  left: -3rem;
+  top: -3rem;
+}
+
+.gear.b {
+  width: clamp(4.5rem, 14vw, 7rem);
+  right: -1.4rem;
+  bottom: -1.6rem;
+  animation-duration: 27s;
+  animation-direction: reverse;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Brass plates */
+.plates {
+  list-style: none;
+  margin: clamp(1.4rem, 4vw, 2.2rem) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+@media (max-width: 640px) {
+  .plates { grid-template-columns: minmax(0, 1fr); }
+}
+
+.plate {
+  --o: 12px;
+  --dot: var(--rivet);
+  position: relative;
+  display: grid;
+  gap: 0.95rem;
+  min-width: 0;
+  padding: 1.4rem 1.5rem 1.25rem;
+  border-radius: 0.5rem;
+  color: var(--ink);
+  background: linear-gradient(155deg, var(--brass-hi) 0%, var(--brass) 40%, var(--brass-end) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 246, 220, 0.7),
+    0 0 0 2px var(--brass-edge),
+    0 14px 28px var(--shadow);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.1em;
+  font-family: var(--font-display);
+  line-height: 1;
+}
+
+.date .mo,
+.date .unit { font-size: 1.15rem; }
+.date .day { font-size: 3.2rem; padding-inline: 0.04em; }
+
+.dow {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  outline: 1px solid var(--ink);
+  outline-offset: -6px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.time {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.8rem;
+}
+
+.lbl {
+  padding: 0.1rem 0.45rem 0.1rem 0.75rem;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  line-height: 1.6;
+}
+
+.clock {
+  font-family: var(--font-num);
+  font-size: clamp(1.5rem, 5.4vw, 2rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.clock .sep {
+  padding-inline: 0.1em;
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+/* Gauge: 15:00 to 21:00, the lit segment is the busy time */
+.gauge {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.track {
+  position: relative;
+  height: 1.15rem;
+  overflow: hidden;
+  border-radius: 3px;
+  background-color: #1a110a;
+  background-image: repeating-linear-gradient(90deg, rgba(230, 214, 175, 0.16) 0 1px, transparent 1px calc(100% / 6));
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.85), 0 0 0 2px var(--brass-edge);
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--from);
+  width: var(--len);
+  background:
+    repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.2) 0 4px, transparent 4px 8px),
+    linear-gradient(var(--ember), var(--copper));
+  box-shadow: 0 0 10px rgba(242, 145, 63, 0.7);
+}
+
+.ticks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-num);
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.ticks li {
+  width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.ticks li::before {
+  content: "";
+  width: 1px;
+  height: 0.35rem;
+  background: var(--ink);
+}
+
+.dur {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(34, 22, 10, 0.35);
+  font-size: 0.92rem;
+}
+
+.dur b {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gear { animation: none; }
+}
+</style>
+
+<main class="wrap">
+  <header class="hero">
+    <svg class="gear a" viewBox="-50 -50 100 100" aria-hidden="true" data-teeth="16"></svg>
+    <svg class="gear b" viewBox="-50 -50 100 100" aria-hidden="true" data-teeth="12"></svg>
+    <h1>予定がある日付と時間帯</h1>
+    <p>時間帯は変更される場合があります。</p>
+  </header>
+
+  <ul class="plates">
+    <li class="plate">
+      <div class="head">
+        <div class="date"><span class="mo">12月</span><span class="day">5</span><span class="unit">日</span></div>
+        <span class="dow">土<span class="sr">曜日</span></span>
+      </div>
+      <p class="time"><span class="lbl">時間</span><span class="clock">18:00<span class="sep">〜</span>19:50</span></p>
+      <div class="gauge" role="img" aria-label="15時から21時の目盛りのうち、18:00から19:50が予定あり" style="--from:50%;--len:30.56%">
+        <div class="track"><span class="fill"></span></div>
+        <ol class="ticks" aria-hidden="true"><li>15時</li><li>16時</li><li>17時</li><li>18時</li><li>19時</li><li>20時</li><li>21時</li></ol>
+      </div>
+      <p class="dur"><span>予定の長さ</span><b>1時間50分</b></p>
+    </li>
+
+    <li class="plate">
+      <div class="head">
+        <div class="date"><span class="mo">12月</span><span class="day">6</span><span class="unit">日</span></div>
+        <span class="dow">日<span class="sr">曜日</span></span>
+      </div>
+      <p class="time"><span class="lbl">時間</span><span class="clock">18:00<span class="sep">〜</span>19:50</span></p>
+      <div class="gauge" role="img" aria-label="15時から21時の目盛りのうち、18:00から19:50が予定あり" style="--from:50%;--len:30.56%">
+        <div class="track"><span class="fill"></span></div>
+        <ol class="ticks" aria-hidden="true"><li>15時</li><li>16時</li><li>17時</li><li>18時</li><li>19時</li><li>20時</li><li>21時</li></ol>
+      </div>
+      <p class="dur"><span>予定の長さ</span><b>1時間50分</b></p>
+    </li>
+
+    <li class="plate">
+      <div class="head">
+        <div class="date"><span class="mo">12月</span><span class="day">12</span><span class="unit">日</span></div>
+        <span class="dow">土<span class="sr">曜日</span></span>
+      </div>
+      <p class="time"><span class="lbl">時間</span><span class="clock">17:00<span class="sep">〜</span>20:00</span></p>
+      <div class="gauge" role="img" aria-label="15時から21時の目盛りのうち、17:00から20:00が予定あり" style="--from:33.33%;--len:50%">
+        <div class="track"><span class="fill"></span></div>
+        <ol class="ticks" aria-hidden="true"><li>15時</li><li>16時</li><li>17時</li><li>18時</li><li>19時</li><li>20時</li><li>21時</li></ol>
+      </div>
+      <p class="dur"><span>予定の長さ</span><b>3時間</b></p>
+    </li>
+
+    <li class="plate">
+      <div class="head">
+        <div class="date"><span class="mo">12月</span><span class="day">13</span><span class="unit">日</span></div>
+        <span class="dow">日<span class="sr">曜日</span></span>
+      </div>
+      <p class="time"><span class="lbl">時間</span><span class="clock">16:20<span class="sep">〜</span>20:00</span></p>
+      <div class="gauge" role="img" aria-label="15時から21時の目盛りのうち、16:20から20:00が予定あり" style="--from:22.22%;--len:61.11%">
+        <div class="track"><span class="fill"></span></div>
+        <ol class="ticks" aria-hidden="true"><li>15時</li><li>16時</li><li>17時</li><li>18時</li><li>19時</li><li>20時</li><li>21時</li></ol>
+      </div>
+      <p class="dur"><span>予定の長さ</span><b>3時間40分</b></p>
+    </li>
+  </ul>
+</main>
+
+<script>
+(function () {
+  function circle(x, y, r) {
+    return "M" + (x - r) + " " + y + " a" + r + " " + r + " 0 1 0 " + 2 * r + " 0 a" + r + " " + r + " 0 1 0 " + -2 * r + " 0 Z ";
+  }
+  function gearPath(teeth) {
+    var ro = 48, ri = 40, step = (2 * Math.PI) / teeth, d = "";
+    var profile = [[ri, -0.32], [ro, -0.18], [ro, 0.18], [ri, 0.32]];
+    for (var i = 0; i < teeth; i++) {
+      for (var j = 0; j < 4; j++) {
+        var t = i * step + profile[j][1] * step;
+        d += (i === 0 && j === 0 ? "M" : "L") + (profile[j][0] * Math.cos(t)).toFixed(2) + " " + (profile[j][0] * Math.sin(t)).toFixed(2) + " ";
+      }
+    }
+    d += "Z " + circle(0, 0, 8);
+    for (var k = 0; k < 6; k++) {
+      var a = (k * Math.PI) / 3;
+      d += circle(+(24 * Math.cos(a)).toFixed(2), +(24 * Math.sin(a)).toFixed(2), 6);
+    }
+    return d;
+  }
+  var gears = document.querySelectorAll(".gear");
+  for (var i = 0; i < gears.length; i++) {
+    var n = parseInt(gears[i].getAttribute("data-teeth"), 10) || 12;
+    gears[i].innerHTML = '<path fill-rule="evenodd" d="' + gearPath(n) + '"></path>';
+  }
+})();
+</script>
+
+</body></html>
